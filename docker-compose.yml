@@ -1,6 +1,25 @@
 version: '3.9'
 
 services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+    depends_on:
+      - mongodb
+
   mysql:
     image: mysql:8.0
     container_name: mysql_container
@@ -41,7 +60,11 @@ secrets:
     file: ./secrets/mysql_root_password.txt
   mysql_user_password:
     file: ./secrets/mysql_user_password.txt
+  mongodb_root_password:
+    file: ./secrets/mongodb_root_password.txt
 
 volumes:
   mysql_data:
+    driver: local
+  mongodb_data:
     driver: local
